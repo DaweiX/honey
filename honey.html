@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Honey</title>
+		<script src='fingerprintDB.js'></script>
+		<script src='utils.js'></script>
+ 	</head>
+ 	<body>
+ 		<div id="content">Honey</div>
+ 		<input id='pwinput' type="password" value = "7654321">
+		<button type='button' onclick='alert(list)'>Show ExtList</button>
+ 	</body>
+</html>
+
+
+<script language="JavaScript">
+var httplist=[];
+var msglist =[];
+
+var list=[];
+var content = document.getElementById("content");
+window.addEventListener('message',function(msg){
+	console.log('---------MSG---------\n'+(msg.data));
+	msglist.push(msg.data);
+	setTimeout(search(msglist),200);
+})
+
+content.addEventListener("mouseover",
+function(event){
+	var entries =window.performance.getEntriesByType("resource");
+	if (httplist != entries){
+		httplist = [];
+		for(var i=0;i<entries.length;i++){
+			httplist.push(entries[i].name)
+		}
+		search(httplist);
+	}
+})
+
+
+
+
+
+// 输入一个指纹，在指纹库中寻找匹配项
+function search(f) {
+	db.forEach(search2);
+	// 第二层循环
+	function search2(dbitem) {
+		if (fingerprintMatch(f,dbitem.f)){
+			extname = dbitem.name;
+			if (!isInArray(list,extname)) {
+				list.push(extname);
+				alert(extname);
+			}
+		}
+	}
+}
+
+
+
+
+/* 输入两个指纹，判断它们是否匹配
+ * @param {string} fin 	待测指纹
+ * @param {string} fdb 	指纹库中的某条指纹
+*/
+function fingerprintMatch(fin, fdb) {
+	var len = fdb.length;
+	var matched = 0;
+	fin.forEach(match);
+
+	
+	function match(s) {
+		console.log(s);
+		for (i = 0; i < len; i++) {
+			console.log(fdb[i]);
+			if (JSON.stringify(s) == JSON.stringify(fdb[i])){ matched++; console.log(matched)}
+		}
+	}
+	console.log(matched);
+	if (matched >= len)
+		return true;
+	return false;
+}
+
+
+</script>
